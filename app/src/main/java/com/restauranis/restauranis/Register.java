@@ -270,9 +270,16 @@ public class Register extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 if (response.equals("1")) {
-                    new EnvioMail("practlis@gmail.com", "waterpolo11").execute(
-                            new EnvioMail.Mail("info@restauranis.com", email_forgot.getText().toString(), "subjeto", "contenido")
-                    );
+
+                    String subject = "Reestablecer contraseña";
+                    String url = "http://restauranis/new_password/" + email_forgot.getText().toString();
+                    String message = "Para reestablecer tu contraseña pulsa aqui: " + url;
+
+                    //Creating SendMail object
+                    EnvioMail sm = new EnvioMail(Register.this, email_forgot.getText().toString(), subject, message);
+
+                    //Executing sendmail to send email
+                    sm.execute();
                     email_forgot.setVisibility(View.INVISIBLE);
                     forgot_button.setVisibility(View.INVISIBLE);
                     text_forgot.setText("Email enviado! Revise su correo para reestablecer la contraseña.");

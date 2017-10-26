@@ -1,7 +1,9 @@
 package com.restauranis.restauranis;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Properties;
 
@@ -17,61 +19,87 @@ import javax.mail.internet.MimeMessage;
  * Created by Joan on 26/10/2017.
  */
 
-public class EnvioMail extends AsyncTask<EnvioMail.Mail,Void,Void> {
-    private final String user;
-    private final String pass;
+public class EnvioMail extends AsyncTask<Void,Void,Void> {
+    //Declaring Variables
+    public static final String EMAIL ="practlis@gmail.com";
+    public static final String PASSWORD ="waterpolo11";
 
-    public EnvioMail(String user, String pass) {
-        super();
-        this.user=user;
-        this.pass=pass;
+    private Context context;
+    private Session session;
+
+    //Information to send email
+    private String mails;
+    private String subject;
+    private String message;
+
+    //Progressdialog to show while sending email
+    private ProgressDialog progressDialog;
+
+    //Class Constructor
+    public EnvioMail(Context context, String mails, String subject, String message){
+        //Initializing variables
+        this.context = context;
+        this.mails = mails;
+        this.subject = subject;
+        this.message = message;
     }
 
     @Override
-    protected Void doInBackground(Mail... mails) {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, pass);
-                    }
-                });
-        for (Mail mail:mails) {
-
-            try {
-
-                Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(mail.from));
-                message.setRecipients(Message.RecipientType.TO,
-                        InternetAddress.parse(mail.to));
-                message.setSubject(mail.subject);
-                message.setText(mail.content);
-
-                Transport.send(message);
-
-            } catch (MessagingException e) {
-                Log.d("MailJob", e.getMessage());
-            }
-        }
-        return null;
+    protected void onPreExecute() {
+        super.onPreExecute();
+        //Showing progress dialog while sending email
+        progressDialog = ProgressDialog.show(context,"Enviando mensaje","Por favor, espere...",false,false);
     }
 
-    public static class Mail {
-        private final String subject;
-        private final String content;
-        private final String from;
-        private final String to;
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        //Dismissing the progress dialog
+        progressDialog.dismiss();
+    }
 
-        public Mail(String from, String to, String subject, String content) {
-            this.subject = subject;
-            this.content = content;
-            this.from = from;
-            this.to = to;
+    @Override
+    protected Void doInBackground(Void... params) {
+        //Creating properties
+        Properties props = new Properties();
+
+        //Configuring properties for gmail
+        //If you are not using gmail you may need to change the values
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+
+        //Creating a new session
+        session = Session.getDefaultInstance(props,
+                new javax.mail.Authenticator() {
+                    //Authenticating the password
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(EMAIL, PASSWORD);
+                    }
+                });
+
+        try {
+            //Creating MimeMessage object
+            MimeMessage mm = new MimeMessage(session);
+
+            //Setting sender address
+            mm.setFrom(new InternetAddress(EMAIL));
+            //Adding receiver
+            mm.addRecipient(Message.RecipientType.TO, new InternetAddress(mails));
+            //Adding subject
+            mm.setSubject(subject);
+            //Adding message
+            mm.setText(message);
+
+            //Sending email
+            Transport.send(mm);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 }
