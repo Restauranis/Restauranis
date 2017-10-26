@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Restauranis</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Buscador</string>
+    <string name="button_login">Login</string>
+    <string name="button_register">Únete a Restauranis</string>
+    <string name="huevo_restauranis">huevo restauranis</string>
+    <string name="logo_restauranis_yellow">logo restauranis yellow</string>
+    <string name="cargando">CARGANDO...</string>
+    <string name="enviar">Enviar</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="texto_registro">¿Aún no estas registrado? Hazlo y aprovecha todas las ventajas</string>
+    <string name="olvidada">He olvidado la contraseña</string>
+
+</resources>

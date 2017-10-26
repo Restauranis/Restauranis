@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.restauranis.restauranis.SplashScreen"
+    android:background="#333333">
+
+        <ImageView
+            android:id="@+id/huevo"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:src="@mipmap/favicon"
+            tools:layout_editor_absoluteY="16dp"
+            tools:layout_editor_absoluteX="0dp"
+            android:layout_marginTop="50dp"
+            android:contentDescription="@string/huevo_restauranis" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo_yellow2"
+            tools:layout_editor_absoluteY="153dp"
+            tools:layout_editor_absoluteX="29dp"
+            android:layout_marginTop="50dp"
+            android:contentDescription="@string/logo_restauranis_yellow"
+            android:layout_below="@+id/huevo"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/logo_restauranis"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_below="@+id/logo_restauranis"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:indeterminate="false"
+            android:max="50"
+            android:progress="1"
+            android:progressDrawable="@drawable/circular"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"/>
+
+        <TextView
+            android:id="@+id/cargando"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/cargando"
+            android:textColor="#f8b333"
+            android:gravity="center"
+            android:layout_below="@+id/progress"
+            android:layout_marginTop="50dp"/>
+</RelativeLayout>
