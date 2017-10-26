@@ -7,14 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by user on 23/10/2017.
+ * Created by Joan on 23/10/2017.
  */
 
 public class Register extends AppCompatActivity {
@@ -45,16 +44,29 @@ public class Register extends AppCompatActivity {
     private TextView textRegister, textOlvidado, text_forgot;
     private Button forgot_button;
     RequestQueue requestQueue;
-    /*String fira_sans = "font/FiraSans-Regular.ttf";
-
-    Typeface TF = Typeface.createFromAsset(getAssets(),fira_sans);*/
+    String fira_sans = "font/fira_sans_regular.ttf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
+
+        textRegister = (TextView) findViewById(R.id.text_register);
         editText_email = (EditText) findViewById(R.id.email);
         editText_password = (EditText) findViewById(R.id.password);
+        email_register = (EditText) findViewById(R.id.email_register);
+        password_register = (EditText) findViewById(R.id.password_register);
+        confirm_password_register = (EditText) findViewById(R.id.confirm_password_register);
+        textOlvidado = (TextView) findViewById(R.id.olvidado);
+
+        Typeface TF = Typeface.createFromAsset(getAssets(),fira_sans);
+        textRegister.setTypeface(TF);
+        editText_email.setTypeface(TF);
+        editText_password.setTypeface(TF);
+        email_register.setTypeface(TF);
+        password_register.setTypeface(TF);
+        confirm_password_register.setTypeface(TF);
+        textOlvidado.setTypeface(TF);
 
         editText_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -67,11 +79,6 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        email_register = (EditText) findViewById(R.id.email_register);
-        password_register = (EditText) findViewById(R.id.password_register);
-        confirm_password_register = (EditText) findViewById(R.id.confirm_password_register);
-
-        textOlvidado = (TextView) findViewById(R.id.olvidado);
         textOlvidado.setPaintFlags(textOlvidado.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         textOlvidado.setOnClickListener(new View.OnClickListener() {
 
@@ -198,7 +205,7 @@ public class Register extends AppCompatActivity {
 
         if(password.length()<6){
             password_register.setError("La contraseña debe tener al menos 6 dígitos");
-        }else if(confirm_password!=password){
+        }else if(!confirm_password.equals(password)){
             confirm_password_register.setError("Las contraseñas no coinciden");
         }else {
 

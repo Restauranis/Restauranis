@@ -3,6 +3,7 @@ package com.restauranis.restauranis;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -20,13 +21,19 @@ public class SplashScreen extends AppCompatActivity {
     // Duración en milisegundos que se mostrará el splash
     private final int DURACION_SPLASH = 4000; // 3 segundos
     private ProgressBar mProgress;
+    private TextView textView;
     private ObjectAnimator anim;
+    String fira_sans = "font/fira_sans_regular.ttf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         mProgress = (ProgressBar) findViewById(R.id.progress);
+        textView = (TextView) findViewById(R.id.cargando);
+
+        Typeface TF = Typeface.createFromAsset(getAssets(),fira_sans);
+        textView.setTypeface(TF);
 
         anim = ObjectAnimator.ofInt(mProgress, "progress", 0, 100);
         mostrarProgress();
