@@ -112,6 +112,7 @@
                 android:rotation="-5"
                 android:text="@string/texto_registro"
                 android:textAlignment="center"
+                android:textSize="17dp"
                 android:textColor="@color/blanco" />
 
             <LinearLayout
@@ -120,6 +121,27 @@
                 android:orientation="horizontal"
                 android:layout_gravity="center"
                 android:weightSum="1">
+
+                <EditText
+                    android:id="@+id/nombre_register"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:inputType="textPersonName"
+                    android:layout_margin="20dp"
+                    android:hint="@string/nombre"
+                    android:background="@color/blanco"
+                    android:padding="5dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:weightSum="1"
+                android:layout_marginTop="-20dp">
 
                 <EditText
                     android:id="@+id/email_register"
@@ -173,7 +195,8 @@
                     android:layout_margin="20dp"
                     android:hint="@string/confirm_password"
                     android:background="@color/blanco"
-                    android:padding="5dp"/>
+                    android:padding="5dp"
+                    android:imeOptions="actionSend"/>
             </LinearLayout>
 
             <LinearLayout

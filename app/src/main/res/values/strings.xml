@@ -14,6 +14,7 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="nombre">Nombre</string>
     <string name="texto_registro">¿Aún no estas registrado? Hazlo y aprovecha todas las ventajas</string>
     <string name="olvidada">He olvidado la contraseña</string>
 

@@ -1,6 +1,8 @@
 package com.restauranis.restauranis;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -73,7 +75,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            new AlertDialog.Builder(this)
+                    .setMessage("¿Estás seguro que quieres salir de la aplicación?")
+                    .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
     }
 
@@ -135,4 +147,5 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
 }

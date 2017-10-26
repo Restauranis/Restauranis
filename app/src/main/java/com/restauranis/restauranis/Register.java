@@ -40,7 +40,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
-    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register;
+    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register, nombre_register;
     private TextView textRegister, textOlvidado, text_forgot;
     private Button forgot_button;
     RequestQueue requestQueue;
@@ -58,6 +58,9 @@ public class Register extends AppCompatActivity {
         password_register = (EditText) findViewById(R.id.password_register);
         confirm_password_register = (EditText) findViewById(R.id.confirm_password_register);
         textOlvidado = (TextView) findViewById(R.id.olvidado);
+        nombre_register = (EditText) findViewById(R.id.nombre_register);
+        final Button buttonLogin = (Button) findViewById(R.id.login);
+        final Button buttonRegister = (Button) findViewById(R.id.register);
 
         Typeface TF = Typeface.createFromAsset(getAssets(),fira_sans);
         textRegister.setTypeface(TF);
@@ -73,6 +76,17 @@ public class Register extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     editText_password.performClick();
                     login();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        confirm_password_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    confirm_password_register.performClick();
+                    register();
                     return true;
                 }
                 return false;
@@ -108,14 +122,12 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        final Button buttonLogin = (Button) findViewById(R.id.login);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 login();
             }
         });
 
-        final Button buttonRegister = (Button) findViewById(R.id.register);
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 register();
@@ -175,8 +187,9 @@ public class Register extends AppCompatActivity {
         final String email = email_register.getText().toString();
         final String password = password_register.getText().toString();
         final String confirm_password = confirm_password_register.getText().toString();
+        final String nombre = nombre_register.getText().toString();
 
-        String mPhoneNumber = null;
+        /*String mPhoneNumber = null;
 
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         // Here, thisActivity is the current activity
@@ -184,7 +197,7 @@ public class Register extends AppCompatActivity {
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
 
-// Should we show an explanation?
+            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.READ_CONTACTS)) {
 
@@ -201,15 +214,19 @@ public class Register extends AppCompatActivity {
         }
         mPhoneNumber = tMgr.getLine1Number();
         //final String mPhoneNumber = tMgr.getLine1Number();
-        Log.d("AAAA",mPhoneNumber);
-
-        if(password.length()<6){
+        Log.d("AAAA",mPhoneNumber);*/
+        if(email.equals("")) {
+            email_register.setError("Email incorrecto");
+            email_register.requestFocus();
+        }else if(password.length()<6){
             password_register.setError("La contraseña debe tener al menos 6 dígitos");
+            password_register.requestFocus();
         }else if(!confirm_password.equals(password)){
             confirm_password_register.setError("Las contraseñas no coinciden");
+            confirm_password_register.requestFocus();
         }else {
 
-            final String finalMPhoneNumber = mPhoneNumber;
+            //final String finalMPhoneNumber = mPhoneNumber;
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -221,20 +238,23 @@ public class Register extends AppCompatActivity {
                         Intent intent = new Intent(Register.this, MainActivity.class);
                         startActivity(intent);
                     } else if (response.equals("2")) {
-                        editText_email.setError("Este email ya existe");
+                        email_register.setError("Este email ya existe en la base de datos");
+                        email_register.requestFocus();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    editText_email.setError("Error en el Servidor. Pruebelo de nuevo por favor");
+                    email_register.setError("Error en el Servidor. Pruebelo de nuevo por favor");
+                    email_register.requestFocus();
                 }
             }) {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> map = new HashMap<String, String>();
                     map.put("consulta", "1");
                     map.put("email", email);
-                    map.put("telefono", finalMPhoneNumber);
+                    map.put("nombre", nombre);
+                    //map.put("telefono", finalMPhoneNumber);
                     map.put("pass", password);
 
                     return map;
