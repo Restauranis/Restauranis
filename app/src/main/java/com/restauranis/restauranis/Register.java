@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -40,7 +42,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
-    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register, nombre_register;
+    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register, nombre_register, localidad_register;
     private TextView textRegister, textOlvidado, text_forgot;
     private Button forgot_button;
     RequestQueue requestQueue;
@@ -59,6 +61,7 @@ public class Register extends AppCompatActivity {
         confirm_password_register = (EditText) findViewById(R.id.confirm_password_register);
         textOlvidado = (TextView) findViewById(R.id.olvidado);
         nombre_register = (EditText) findViewById(R.id.nombre_register);
+        localidad_register = (EditText) findViewById(R.id.localidad);
         final Button buttonLogin = (Button) findViewById(R.id.login);
         final Button buttonRegister = (Button) findViewById(R.id.register);
 
@@ -70,6 +73,18 @@ public class Register extends AppCompatActivity {
         password_register.setTypeface(TF);
         confirm_password_register.setTypeface(TF);
         textOlvidado.setTypeface(TF);
+        localidad_register.setTypeface(TF);
+
+        localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         editText_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -82,10 +97,10 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        confirm_password_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        localidad_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    confirm_password_register.performClick();
+                    localidad_register.performClick();
                     register();
                     return true;
                 }
@@ -188,6 +203,7 @@ public class Register extends AppCompatActivity {
         final String password = password_register.getText().toString();
         final String confirm_password = confirm_password_register.getText().toString();
         final String nombre = nombre_register.getText().toString();
+        final String localidad = localidad_register.getText().toString();
 
         /*String mPhoneNumber = null;
 
@@ -224,6 +240,9 @@ public class Register extends AppCompatActivity {
         }else if(!confirm_password.equals(password)){
             confirm_password_register.setError("Las contraseñas no coinciden");
             confirm_password_register.requestFocus();
+        }else if(localidad.equals("")){
+            localidad_register.setError("Es necesario saber la localidad");
+            localidad_register.requestFocus();
         }else {
 
             //final String finalMPhoneNumber = mPhoneNumber;
@@ -272,7 +291,7 @@ public class Register extends AppCompatActivity {
                 if (response.equals("1")) {
 
                     String subject = "Reestablecer contraseña";
-                    String url = "http://restauranis/new_password/" + email_forgot.getText().toString();
+                    String url = "https://restauranis/new_password/" + email_forgot.getText().toString();
                     String message = "Para reestablecer tu contraseña pulsa aqui: " + url;
 
                     //Creating SendMail object
@@ -280,10 +299,12 @@ public class Register extends AppCompatActivity {
 
                     //Executing sendmail to send email
                     sm.execute();
+
                     email_forgot.setVisibility(View.INVISIBLE);
                     forgot_button.setVisibility(View.INVISIBLE);
                     text_forgot.setText("Email enviado! Revise su correo para reestablecer la contraseña.");
                     text_forgot.setVisibility(View.VISIBLE);
+
                 } else if (response.equals("2")) {
                     email_forgot.setError("Este email no existe en nuestra base de datos");
                 }

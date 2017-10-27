@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,7 @@ import java.util.TimerTask;
 public class SplashScreen extends AppCompatActivity {
 
     // Duración en milisegundos que se mostrará el splash
-    private final int DURACION_SPLASH = 4000; // 3 segundos
+    private final int DURACION_SPLASH = 3000; // 3 segundos
     private ProgressBar mProgress;
     private TextView textView;
     private ObjectAnimator anim;
@@ -35,6 +36,10 @@ public class SplashScreen extends AppCompatActivity {
         Typeface TF = Typeface.createFromAsset(getAssets(),fira_sans);
         textView.setTypeface(TF);
 
+        Intent intent = getIntent();
+        final Uri data = intent.getData();
+
+
         anim = ObjectAnimator.ofInt(mProgress, "progress", 0, 100);
         mostrarProgress();
 
@@ -45,7 +50,13 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 mProgress.setProgress(DURACION_SPLASH);
-                if(!email.equalsIgnoreCase(""))
+                if(data!=null) {
+                    String url = data.toString();
+                    Intent intent = new Intent(SplashScreen.this, NewPassword.class);
+                    intent.putExtra("email",url);
+                    startActivity(intent);
+
+                }else if(!email.equalsIgnoreCase(""))
                 {
                     Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                     startActivity(intent);
@@ -60,7 +71,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private void mostrarProgress(){
         //agregamos el tiempo de la animacion a mostrar
-        anim.setDuration(14000);
+        anim.setDuration(12000);
         anim.setInterpolator(new DecelerateInterpolator());
         //iniciamos el progressbar
         anim.start();
