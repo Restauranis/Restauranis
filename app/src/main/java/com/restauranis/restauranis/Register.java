@@ -1,24 +1,19 @@
 package com.restauranis.restauranis;
 
-import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,8 +24,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,12 +41,13 @@ import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
-    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register, nombre_register, localidad_register;
+    private EditText editText_email, editText_password, email_forgot, email_register, password_register, confirm_password_register, nombre_register, movil_register;
     private TextView textRegister, textOlvidado, text_forgot;
+    private AutoCompleteTextView localidad_register;
     private Button forgot_button;
     RequestQueue requestQueue;
     String fira_sans = "font/fira_sans_regular.ttf";
+    String url = "https://www.restauranis.com/consultas-app.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class Register extends AppCompatActivity {
         confirm_password_register = (EditText) findViewById(R.id.confirm_password_register);
         textOlvidado = (TextView) findViewById(R.id.olvidado);
         nombre_register = (EditText) findViewById(R.id.nombre_register);
-        localidad_register = (EditText) findViewById(R.id.localidad);
+        movil_register = (EditText) findViewById(R.id.movil);
         final Button buttonLogin = (Button) findViewById(R.id.login);
         final Button buttonRegister = (Button) findViewById(R.id.register);
 
@@ -73,35 +74,13 @@ public class Register extends AppCompatActivity {
         password_register.setTypeface(TF);
         confirm_password_register.setTypeface(TF);
         textOlvidado.setTypeface(TF);
-        localidad_register.setTypeface(TF);
-
-        localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        movil_register.setTypeface(TF);
 
         editText_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     editText_password.performClick();
                     login();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        localidad_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    localidad_register.performClick();
-                    register();
                     return true;
                 }
                 return false;
@@ -150,10 +129,73 @@ public class Register extends AppCompatActivity {
         });
 
         requestQueue = Volley.newRequestQueue(this);
+
+        // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
+        //JsonURL is the URL to be fetched from
+        JsonArrayRequest arrayreq = new JsonArrayRequest(Request.Method.POST, url, null,
+                // The second parameter Listener overrides the method onResponse() and passes
+                //JSONArray as a parameter
+                new Response.Listener<JSONArray>() {
+
+                    // Takes the response from the JSON request
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        String[] localidades = new String[response.length()];
+                        for (int i = 0; i < response.length(); i++) {
+                            //gets each JSON object within the JSON array
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                String nombreLocalidad = jsonObject.getString("localidad");
+
+                                localidades[i]=nombreLocalidad;
+
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Register.this, android.R.layout.simple_dropdown_item_1line, localidades);
+                        localidad_register.setAdapter(adapter);
+                    }
+                },
+                // The final parameter overrides the method onErrorResponse() and passes VolleyError
+                //as a parameter
+                new Response.ErrorListener() {
+                    @Override
+                    // Handles errors that occur due to Volley
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", "Error");
+                    }
+                }
+        );
+        // Adds the JSON array request "arrayreq" to the request queue
+        requestQueue.add(arrayreq);
+        localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
+
+        localidad_register.setTypeface(TF);
+        localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        localidad_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    localidad_register.performClick();
+                    register();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void login() {
-        String url = "https://www.restauranis.com/consultas-app.php";
+
         final String email = editText_email.getText().toString();
         final String password = editText_password.getText().toString();
         if (email.equals("")) {
@@ -172,6 +214,7 @@ public class Register extends AppCompatActivity {
                         editor.apply();
                         Intent intent = new Intent(Register.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     } else if (response.equals("2")) {
                         editText_email.setError("Email incorrecto");
                     } else if (response.equals("3")) {
@@ -198,39 +241,13 @@ public class Register extends AppCompatActivity {
     }
 
     private void register() {
-        String url = "https://www.restauranis.com/consultas-app.php";
         final String email = email_register.getText().toString();
         final String password = password_register.getText().toString();
         final String confirm_password = confirm_password_register.getText().toString();
         final String nombre = nombre_register.getText().toString();
+        final String movil = movil_register.getText().toString();
         final String localidad = localidad_register.getText().toString();
 
-        /*String mPhoneNumber = null;
-
-        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_CONTACTS)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-            }
-        }
-        mPhoneNumber = tMgr.getLine1Number();
-        //final String mPhoneNumber = tMgr.getLine1Number();
-        Log.d("AAAA",mPhoneNumber);*/
         if(email.equals("")) {
             email_register.setError("Email incorrecto");
             email_register.requestFocus();
@@ -240,22 +257,25 @@ public class Register extends AppCompatActivity {
         }else if(!confirm_password.equals(password)){
             confirm_password_register.setError("Las contraseñas no coinciden");
             confirm_password_register.requestFocus();
+        }else if(movil.equals("")){
+            movil_register.setError("Es necesario un móvil válido");
+            movil_register.requestFocus();
         }else if(localidad.equals("")){
             localidad_register.setError("Es necesario saber la localidad");
             localidad_register.requestFocus();
         }else {
 
-            //final String finalMPhoneNumber = mPhoneNumber;
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     if (response.equals("1")) {
-                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(Register.this);
+                       /* SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(Register.this);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("Email", email);
-                        editor.apply();
+                        editor.apply();*/
                         Intent intent = new Intent(Register.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     } else if (response.equals("2")) {
                         email_register.setError("Este email ya existe en la base de datos");
                         email_register.requestFocus();
@@ -273,7 +293,8 @@ public class Register extends AppCompatActivity {
                     map.put("consulta", "1");
                     map.put("email", email);
                     map.put("nombre", nombre);
-                    //map.put("telefono", finalMPhoneNumber);
+                    map.put("telefono", movil);
+                    map.put("localidad", localidad);
                     map.put("pass", password);
 
                     return map;
@@ -284,7 +305,6 @@ public class Register extends AppCompatActivity {
     }
 
     private void forgot(){
-        String url = "https://www.restauranis.com/consultas-app.php";
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -326,4 +346,78 @@ public class Register extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    /*public void localidades(){
+        String url = "https://www.restauranis.com/consultas-app.php";
+
+        Log.d("AAAA", "entraaa");
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST, url, new JSONObject(params),
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        Log.d("response", "res-rec is" + response);
+                        // Do something with response
+                        //mTextView.setText(response.toString());
+                        if (response!=null) {
+                            // Process the JSON
+                            try {
+                                // Loop through the array elements
+                                for (int i = 0; i < response.length(); i++) {
+                                    // Get current json object
+                                    JSONObject student = response.getJSONObject(i);
+
+                                    // Get the current student (json object) data
+                                    String firstName = student.getString("localidad");
+                                    Log.d("AAAA", firstName);
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        // Do something when error occurred
+
+                    }
+                }
+        ){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("consulta", "5");
+
+                return super.getParams();
+            }
+        };
+
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonArrayRequest);
+    }*/
+
+       /* StringRequest request = new StringRequest(Request.Method.POST, url, (Response.Listener<String>) new Response.Listener<String[]>() {
+            @Override
+            public void onResponse(String[] response) {
+                Log.d("AAA", response[0]);
+                Log.d("AAA", response[1]);
+                //localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                email_forgot.setError("Error en el Servidor. Pruebelo de nuevo por favor");
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("consulta", "5");
+
+                return map;
+            }
+        };
+        requestQueue.add(request);
+    }*/
 }

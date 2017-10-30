@@ -29,7 +29,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         load();
-
+        requestQueue = Volley.newRequestQueue(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,10 +145,26 @@ public class MainActivity extends AppCompatActivity
     private void load() {
         String url = "https://www.restauranis.com/consultas-app.php";
         /*SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final String email = preferences.getString("Email", "");*/
+        final String email = preferences.getString("Email", "");
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AAAA",response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("consulta", "4");
 
-
+                return map;
+            }
+        };
+        requestQueue.add(request);*/
     }
 
 }

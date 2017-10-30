@@ -207,6 +207,27 @@
                 android:layout_marginTop="-20dp">
 
                 <EditText
+                    android:id="@+id/movil"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:inputType="phone"
+                    android:layout_margin="20dp"
+                    android:hint="@string/movil"
+                    android:background="@color/blanco"
+                    android:padding="5dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:weightSum="1"
+                android:layout_marginTop="-20dp">
+
+                <AutoCompleteTextView
                     android:id="@+id/localidad"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
