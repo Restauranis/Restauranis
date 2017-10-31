@@ -45,7 +45,7 @@ public class Register extends AppCompatActivity {
     private TextView textRegister, textOlvidado, text_forgot;
     private AutoCompleteTextView localidad_register;
     private Button forgot_button;
-    RequestQueue requestQueue;
+    RequestQueue requestQueue, requestQueue2;
     String fira_sans = "font/fira_sans_regular.ttf";
     String url = "https://www.restauranis.com/consultas-app.php";
 
@@ -128,7 +128,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue2 = Volley.newRequestQueue(this);
 
         // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
         //JsonURL is the URL to be fetched from
@@ -169,7 +169,7 @@ public class Register extends AppCompatActivity {
                 }
         );
         // Adds the JSON array request "arrayreq" to the request queue
-        requestQueue.add(arrayreq);
+        requestQueue2.add(arrayreq);
         localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
 
         localidad_register.setTypeface(TF);
@@ -192,6 +192,8 @@ public class Register extends AppCompatActivity {
                 return false;
             }
         });
+
+        requestQueue = Volley.newRequestQueue(this);
     }
 
     private void login() {
@@ -229,7 +231,7 @@ public class Register extends AppCompatActivity {
             }) {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> map = new HashMap<String, String>();
-                    map.put("consulta", "0");
+                    map.put("consulta", "1");
                     map.put("email", email);
                     map.put("password", password);
 
@@ -290,7 +292,7 @@ public class Register extends AppCompatActivity {
             }) {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> map = new HashMap<String, String>();
-                    map.put("consulta", "1");
+                    map.put("consulta", "2");
                     map.put("email", email);
                     map.put("nombre", nombre);
                     map.put("telefono", movil);
@@ -337,7 +339,7 @@ public class Register extends AppCompatActivity {
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("consulta", "2");
+                map.put("consulta", "3");
                 map.put("email", email_forgot.getText().toString());
 
                 return map;
@@ -345,79 +347,4 @@ public class Register extends AppCompatActivity {
         };
         requestQueue.add(request);
     }
-
-    /*public void localidades(){
-        String url = "https://www.restauranis.com/consultas-app.php";
-
-        Log.d("AAAA", "entraaa");
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST, url, new JSONObject(params),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        Log.d("response", "res-rec is" + response);
-                        // Do something with response
-                        //mTextView.setText(response.toString());
-                        if (response!=null) {
-                            // Process the JSON
-                            try {
-                                // Loop through the array elements
-                                for (int i = 0; i < response.length(); i++) {
-                                    // Get current json object
-                                    JSONObject student = response.getJSONObject(i);
-
-                                    // Get the current student (json object) data
-                                    String firstName = student.getString("localidad");
-                                    Log.d("AAAA", firstName);
-
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error){
-                        // Do something when error occurred
-
-                    }
-                }
-        ){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String, String> params = new HashMap<String, String>();
-                params.put("consulta", "5");
-
-                return super.getParams();
-            }
-        };
-
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonArrayRequest);
-    }*/
-
-       /* StringRequest request = new StringRequest(Request.Method.POST, url, (Response.Listener<String>) new Response.Listener<String[]>() {
-            @Override
-            public void onResponse(String[] response) {
-                Log.d("AAA", response[0]);
-                Log.d("AAA", response[1]);
-                //localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                email_forgot.setError("Error en el Servidor. Pruebelo de nuevo por favor");
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("consulta", "5");
-
-                return map;
-            }
-        };
-        requestQueue.add(request);
-    }*/
 }

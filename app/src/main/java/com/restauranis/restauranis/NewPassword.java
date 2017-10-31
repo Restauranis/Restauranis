@@ -111,7 +111,7 @@ public class NewPassword extends AppCompatActivity {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> map = new HashMap<String, String>();
                     Log.d("AAA", finalEmail);
-                    map.put("consulta", "3");
+                    map.put("consulta", "4");
                     map.put("email", finalEmail);
                     map.put("password", password);
 
