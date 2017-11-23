@@ -21,8 +21,8 @@ import javax.mail.internet.MimeMessage;
 
 public class EnvioMail extends AsyncTask<Void,Void,Void> {
     //Declaring Variables
-    public static final String EMAIL ="practlis@gmail.com";
-    public static final String PASSWORD ="waterpolo11";
+    public static final String EMAIL ="restauranis.app@gmail.com";
+    public static final String PASSWORD ="kko3kko32";
 
     private Context context;
     private Session session;

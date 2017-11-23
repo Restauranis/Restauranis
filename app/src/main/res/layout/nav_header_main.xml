@@ -21,11 +21,10 @@
             android:layout_marginTop="20dp"
             android:id="@+id/logged"/>
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/nombre_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
-            android:text="Rimas Curtinaitis"
             android:textSize="20dp"
             android:layout_toRightOf="@id/logged"
             android:paddingLeft="20dp"

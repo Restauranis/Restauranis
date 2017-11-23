@@ -1,12 +1,16 @@
 package com.restauranis.restauranis;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,7 +51,11 @@ public class Register extends AppCompatActivity {
     private Button forgot_button;
     RequestQueue requestQueue, requestQueue2;
     String fira_sans = "font/fira_sans_regular.ttf";
-    String url = "https://www.restauranis.com/consultas-app.php";
+    String url = "https://www.restauranis.com/consultas-register-app.php";
+
+    LocationManager locationManager;
+    double longitudeGPS, latitudeGPS;
+    private String localidadGPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,15 +181,16 @@ public class Register extends AppCompatActivity {
         localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
 
         localidad_register.setTypeface(TF);
-        localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        /*localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
                     Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_SHORT).show();
+                    checkLocation();
                 } else {
                     Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });*/
         localidad_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
@@ -195,6 +204,37 @@ public class Register extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
     }
+
+    /*private boolean checkLocation() {
+        if (!isLocationEnabled())
+            showAlert();
+        return isLocationEnabled();
+    }*/
+
+    private void showAlert() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Su ubicación esta desactivada.\npor favor active su ubicación " +
+                        "usa esta app")
+                .setPositiveButton("Configuración de ubicación", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
+    /*private boolean isLocationEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }*/
 
     private void login() {
 
@@ -271,10 +311,11 @@ public class Register extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     if (response.equals("1")) {
-                       /* SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(Register.this);
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(Register.this);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("Email", email);
-                        editor.apply();*/
+                        editor.putString("Localidad", localidad);
+                        editor.apply();
                         Intent intent = new Intent(Register.this, MainActivity.class);
                         startActivity(intent);
                         finish();
