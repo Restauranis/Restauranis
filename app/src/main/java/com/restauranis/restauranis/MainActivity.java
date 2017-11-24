@@ -28,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -37,6 +38,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private Menu menu;
     RequestQueue requestQueue;
-    private String email, localidad, nombre_usuario, nombre_restaurante;
+    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio;
     private int id_restaurante;
     private String url = "https://www.restauranis.com/consultas-app.php";
     private TextView nombre_user;
@@ -246,7 +248,13 @@ public class MainActivity extends AppCompatActivity
                             JSONObject obj = j.getJSONObject(i);
                             id_restaurante = obj.getInt("id");
                             nombre_restaurante = obj.getString("nombre");
-                            Restaurant rest = new Restaurant(id_restaurante, nombre_restaurante);
+                            precio = obj.getString("precio");
+                            cocina = obj.getString("cocina");
+                            urlImagen = obj.getString("foto");
+                            Log.d("AAAA", String.valueOf(precio));
+                            Log.d("AAAA", cocina);
+                            Log.d("AAAA", urlImagen);
+                            Restaurant rest = new Restaurant(id_restaurante, nombre_restaurante, urlImagen, precio, cocina);
 
                             restaurantes.add(rest);
                             //nombre_user.setText(nombre);
@@ -297,7 +305,22 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mTitleView.setText(mValues.get(position).nombre);
+            holder.textViewNombre.setText(mValues.get(position).nombre);
+            holder.textViewCocina.setText(mValues.get(position).cocina);
+            holder.textViewPrecio.setText(mValues.get(position).precio + "€");
+            Picasso.with(getApplicationContext()).load(mValues.get(position).urlImage).into(holder.imageView);
+
+            holder.mView.setTag(mValues.get(position).id);
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int currentPos = (int) v.getTag();
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, Miniweb.class);
+                    intent.putExtra("idrestaurante", currentPos);
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override
@@ -307,18 +330,22 @@ public class MainActivity extends AppCompatActivity
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mTitleView;
+            public final TextView textViewNombre, textViewCocina, textViewPrecio;
+            public final ImageView imageView;
             public Restaurant mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mTitleView = (TextView) view.findViewById(R.id.title);
+                textViewNombre = (TextView) view.findViewById(R.id.title);
+                textViewCocina = (TextView) view.findViewById(R.id.precio);
+                textViewPrecio = (TextView) view.findViewById(R.id.cocina);
+                imageView = (ImageView) view.findViewById(R.id.image);
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + mTitleView.getText() + "'";
+                return super.toString() + " '" + textViewNombre.getText() + "'";
             }
         }
     }

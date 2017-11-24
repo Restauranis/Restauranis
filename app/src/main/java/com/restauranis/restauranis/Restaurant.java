@@ -8,11 +8,11 @@ public class Restaurant {
     public int id;
     public String nombre;
     public String urlImage;
-    public int precio;
+    public String precio;
     public String cocina;
     public double valoracion;
 
-    public Restaurant(int id, String nombre, String urlImage, int precio, String cocina, double valoracion){
+    public Restaurant(int id, String nombre, String urlImage, String precio, String cocina, double valoracion){
         this.id = id;
         this.nombre = nombre;
         this.urlImage = urlImage;
@@ -21,9 +21,12 @@ public class Restaurant {
         this.valoracion = valoracion;
     }
 
-    public Restaurant(int id, String nombre){
+    public Restaurant(int id, String nombre, String urlImage, String precio, String cocina){
         this.id = id;
         this.nombre = nombre;
+        this.urlImage = urlImage;
+        this.precio = precio;
+        this.cocina = cocina;
     }
 
 }

@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/gris</item>
         <item name="colorPrimaryDark">@color/gris</item>
         <item name="colorAccent">@color/gris</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
 
