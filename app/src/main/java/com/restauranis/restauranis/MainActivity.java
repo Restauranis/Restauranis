@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private Menu menu;
     RequestQueue requestQueue;
-    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio;
+    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio, telefono_usuario;
     private int id_restaurante;
     private String url = "https://www.restauranis.com/consultas-app.php";
     private TextView nombre_user;
@@ -75,10 +75,12 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.restaurants);
 
         if(localidad.isEmpty()){
-            obtenerLocalidad();
+            loadPersonalInfo();
+        }else{
+            nombre_usuario =preferences.getString("Nombre", "");
+            telefono_usuario =preferences.getString("Telefono", "");
         }
         loadRestaurantes();
-        loadPersonalInfo();
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -172,28 +174,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void obtenerLocalidad(){
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("AAAA",response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("consulta", "2");
-                map.put("email",email);
-                return map;
-            }
-        };
-        requestQueue.add(request);
-    }
-
     private void loadPersonalInfo(){
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -206,6 +186,14 @@ public class MainActivity extends AppCompatActivity
                         try {
                             JSONObject obj = j.getJSONObject(i);
                             nombre_usuario = obj.getString("nombre");
+                            telefono_usuario = obj.getString("telefono");
+                            localidad = obj.getString("localidad");
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("Nombre", nombre_usuario);
+                            editor.putString("Telefono", telefono_usuario);
+                            editor.putString("Localidad", localidad);
+                            editor.apply();
                             //nombre_user.setText(nombre);
 
                         } catch (JSONException e) {
@@ -226,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("consulta", "3");
+                map.put("consulta", "2");
                 map.put("email",email);
                 return map;
             }
@@ -251,9 +239,6 @@ public class MainActivity extends AppCompatActivity
                             precio = obj.getString("precio");
                             cocina = obj.getString("cocina");
                             urlImagen = obj.getString("foto");
-                            Log.d("AAAA", String.valueOf(precio));
-                            Log.d("AAAA", cocina);
-                            Log.d("AAAA", urlImagen);
                             Restaurant rest = new Restaurant(id_restaurante, nombre_restaurante, urlImagen, precio, cocina);
 
                             restaurantes.add(rest);

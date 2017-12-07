@@ -7,4 +7,6 @@
     <color name="gris">#333333</color>
     <color name="groc">#F8B333</color>
     <color name="verd">#1b9e27</color>
+    <color name="negro">#000000</color>
+    <color name="blau">#333669</color>
 </resources>

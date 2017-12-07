@@ -28,10 +28,6 @@ import java.util.Map;
 
 public class Miniweb extends AppCompatActivity {
 
-    private Restaurant restaurant;
-    RequestQueue requestQueue;
-    private String url = "https://www.restauranis.com/consultas-miniweb-app.php";
-    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio;
     private int id_restaurante;
 
     @Override
@@ -39,6 +35,7 @@ public class Miniweb extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.miniweb);
         Toolbar toolbar = (Toolbar) findViewById(R.id.miniweb_toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
@@ -48,47 +45,19 @@ public class Miniweb extends AppCompatActivity {
         }
 
         id_restaurante = getIntent().getIntExtra("idrestaurante",0);
-        requestQueue = Volley.newRequestQueue(this);
 
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+            Bundle arguments = new Bundle();
+            arguments.putInt("idrestaurante", id_restaurante);
+            MiniwebFragment fragment = new MiniwebFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.miniweb_details, fragment)
+                    .commit();
+        }
 
-                    // Parsea json
-                    for (int i = 0; i < j.length(); i++) {
-                        try {
-                            JSONObject obj = j.getJSONObject(i);
-                            urlImagen = obj.getString("foto");
-                            Log.d("AAAA",urlImagen);
-                            ImageView background = (ImageView) findViewById(R.id.background_miniweb);
-                            Picasso.with(getBaseContext()).load(urlImagen).into(background);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("consulta", "1");
-                map.put("idrestaurante", String.valueOf(id_restaurante));
-                return map;
-            }
-        };
-        requestQueue.add(request);
     }
 
     @Override
