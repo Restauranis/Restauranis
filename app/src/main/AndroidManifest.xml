@@ -50,6 +50,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity android:name=".Opinar"></activity>
+        <activity android:name=".Reservar"></activity>
     </application>
 
 </manifest>

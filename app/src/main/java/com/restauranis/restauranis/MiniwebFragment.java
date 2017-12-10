@@ -2,17 +2,14 @@ package com.restauranis.restauranis;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.text.SpannableString;
@@ -21,20 +18,16 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -53,16 +46,14 @@ import java.text.Normalizer;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class MiniwebFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
 
-    private Restaurant restaurant;
     RequestQueue requestQueue;
     private String url = "https://www.restauranis.com/consultas-miniweb-app.php";
-    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio, direccion, telefono, caracteristico, lat, lon, valoracion, llamar, fecha_solicitud, personas_solicitud, presupuesto_solicitud, comentarios_solicitud, comentarios;
+    private String email, localidad, nombre_usuario, nombre_restaurante, cocina, urlImagen, precio, direccion, telefono, caracteristico, lat, lon, valoracion, llamar, fecha_solicitud, personas_solicitud, presupuesto_solicitud, comentarios_solicitud, comentarios, estado;
     private int id_restaurante;
     private TextView textViewNombre, textViewDireccion, textViewLocalidad, textViewTelefono, textViewCocina, textViewCaracteristico, textViewValoracion, carta, menu_1, menu_2, menu_3, menu_4, menu_5, textViewComentarios;
     private EditText editText_fecha_solicitud, editText_personas_solicitud, editText_presupuesto_solicitud, editText_comentarios_solicitud;
@@ -70,10 +61,9 @@ public class MiniwebFragment extends Fragment {
     String fira_sans_semibold = "font/fira_sans_semibold.ttf";
     String fira_sans_light = "font/fira_sans_light.ttf";
     private int mYear, mMonth, mDay, numMenus, numCartas;
-    static final int DATE_ID = 0;
     Calendar C = Calendar.getInstance();
     private ImageView icono_solicitud, icono_como_llegar, compartir_miniweb, llamar_miniweb, icono_comentarios, icono_reservar;
-    private Button solicitud_grupos;
+    private Button solicitud_grupos, boton_comentarios;
     private ScrollView scrollView;
 
     public MiniwebFragment() {
@@ -132,6 +122,7 @@ public class MiniwebFragment extends Fragment {
                             valoracion = obj.getString("valoracion");
                             numMenus = obj.getInt("numMenus");
                             numCartas = obj.getInt("numCarta");
+                            estado = obj.getString("estado");
 
                             ImageView background = (ImageView) activity.findViewById(R.id.background_miniweb);
                             textViewNombre = (TextView) activity.findViewById(R.id.nombre_restaurante);
@@ -165,9 +156,6 @@ public class MiniwebFragment extends Fragment {
                                 scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                                     @Override
                                     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-                                        Log.d("AAAA", "asdf"+scroller.getTop());
-
                                         if(scroller.getTop()<250){
                                             appBarLayout.setTitle(nombre_restaurante);
                                         }else if(scroller.getTop()>250){
@@ -201,6 +189,31 @@ public class MiniwebFragment extends Fragment {
                                     }
                                 }
                             });
+
+                            icono_reservar = (ImageView) activity.findViewById(R.id.icono_reservar);
+                            icono_reservar.setOnClickListener(new View.OnClickListener(){
+                                public void onClick(View v){
+                                    Context context = v.getContext();
+                                    Intent intent = new Intent(context, Reservar.class);
+                                    intent.putExtra("idrestaurante", id_restaurante);
+                                    intent.putExtra("foto", urlImagen);
+                                    intent.putExtra("nombre", nombre_restaurante);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            boton_comentarios = (Button) activity.findViewById(R.id.dejar_comentario);
+                            boton_comentarios.setOnClickListener(new View.OnClickListener(){
+                                public void onClick(View v){
+                                    Context context = v.getContext();
+                                    Intent intent = new Intent(context, Opinar.class);
+                                    intent.putExtra("idrestaurante", id_restaurante);
+                                    intent.putExtra("foto", urlImagen);
+                                    intent.putExtra("nombre", nombre_restaurante);
+                                    startActivity(intent);
+                                }
+                            });
+
                             llamar_miniweb.setOnClickListener(new View.OnClickListener(){
 
                                 public void onClick(View v){
@@ -274,6 +287,13 @@ public class MiniwebFragment extends Fragment {
                                         menu_5.setVisibility(View.GONE);
                                         break;
                                     case 5:
+                                        menu_1.setText("Menu 1");
+                                        menu_2.setText("Menu 2");
+                                        menu_3.setText("Menu 3");
+                                        menu_4.setText("Menu 4");
+                                        menu_5.setText("Menu 5");
+                                        break;
+                                    default:
                                         menu_1.setText("Menu 1");
                                         menu_2.setText("Menu 2");
                                         menu_3.setText("Menu 3");
@@ -388,10 +408,16 @@ public class MiniwebFragment extends Fragment {
                             textViewNombre.setText(nombre_restaurante);
                             textViewDireccion.setText(direccion);
                             textViewLocalidad.setText(localidad);
-                            telefono = telefono.substring(0, 3) + " " + telefono.substring(3, 6) + " " + telefono.substring(6, 9) + " C. Reservas";
-                            SpannableString ss1=  new SpannableString(telefono);
-                            ss1.setSpan(new RelativeSizeSpan(1.5f), 0,11, 0); // set size
-                            textViewTelefono.setText(ss1);
+
+                            if(estado.equals("Guia")){
+                                telefono = telefono.substring(0, 3) + " " + telefono.substring(3, 6) + " " + telefono.substring(6, 9);
+                                textViewTelefono.setText(telefono);
+                            }else{
+                                telefono = telefono.substring(0, 3) + " " + telefono.substring(3, 6) + " " + telefono.substring(6, 9) + " C. Reservas";
+                                SpannableString ss1=  new SpannableString(telefono);
+                                ss1.setSpan(new RelativeSizeSpan(1.5f), 0,11, 0); // set size
+                                textViewTelefono.setText(ss1);
+                            }
                             textViewCocina.setText(cocina);
                             textViewCaracteristico.setText(caracteristico);
                             textViewValoracion.setText(valoracion);

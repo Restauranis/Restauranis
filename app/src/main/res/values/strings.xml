@@ -29,5 +29,7 @@
     <string name="subtitulo_solicitud">Consulta los menús y las ventajas de ir a cenar con los amigos o la família</string>
     <string name="titulo_solicitud">Solicitud de Grupos</string>
     <string name="titulo_menus">Menús y Carta</string>
+    <string name="texto_opinar">Tu opinión es importante para nosotros</string>
+    <string name="texto_reservar">Escoja los datos para su reserva</string>
 
 </resources>
