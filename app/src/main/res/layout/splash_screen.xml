@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,16 +17,16 @@
             android:contentDescription="@string/huevo_restauranis" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo_yellow2"
-            tools:layout_editor_absoluteY="153dp"
-            tools:layout_editor_absoluteX="29dp"
-            android:layout_marginTop="50dp"
-            android:contentDescription="@string/logo_restauranis_yellow"
+            android:id="@+id/logo_restauranis"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
             android:layout_below="@+id/huevo"
             android:layout_centerHorizontal="true"
-            android:id="@+id/logo_restauranis"/>
+            android:layout_marginTop="50dp"
+            android:contentDescription="@string/logo_restauranis_yellow"
+            android:src="@drawable/logo_yellow2"
+            tools:layout_editor_absoluteX="29dp"
+            tools:layout_editor_absoluteY="153dp" />
 
         <ProgressBar
             android:id="@+id/progress"

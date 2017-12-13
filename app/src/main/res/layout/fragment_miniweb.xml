@@ -99,54 +99,66 @@
             android:layout_centerHorizontal="true"
             android:id="@+id/botones">
 
-            <TableRow android:layout_height="79dp">
+            <TableRow android:layout_height="76dp">
 
                 <ImageView
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="0.25"
                     android:id="@+id/icono_reservar"
+                    android:contentDescription="@string/icono_reservar"
                     android:src="@drawable/reserva_online" />
 
                 <ImageView
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="0.25"
                     android:id="@+id/icono_solicitud"
+                    android:contentDescription="@string/icono_solicitud"
                     android:src="@drawable/solicitud_grupos" />
 
                 <ImageView
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="0.25"
                     android:id="@+id/icono_como_llegar"
+                    android:contentDescription="@string/icono_como_llegar"
                     android:src="@drawable/como_llegar" />
 
                 <ImageView
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_weight="0.25"
                     android:id="@+id/icono_comentarios"
+                    android:contentDescription="@string/icono_comentarios"
                     android:src="@drawable/comentarios" />
             </TableRow>
             <TableRow>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
                     android:text="Reserva\nOnline"
                     android:textAllCaps="true"
                     android:textAlignment="center"/>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
                     android:text="Solicitud\nGrupos"
                     android:textAllCaps="true"
                     android:textAlignment="center"/>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
                     android:text="Cómo\nLlegar"
                     android:textAllCaps="true"
                     android:textAlignment="center"/>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
                     android:text="Opina y\nvalora"
                     android:textAllCaps="true"
                     android:textAlignment="center"/>
@@ -254,8 +266,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/no_menus"
                         android:textAlignment="center"
-                        android:layout_weight="3"
-                        android:layout_centerHorizontal="true"/>
+                        android:layout_weight="3"/>
                 </TableRow>
                 <TableLayout android:id="@+id/texto_carta" android:visibility="gone">
                     <TableRow>
@@ -266,8 +277,7 @@
                             android:textStyle="bold"
                             android:textSize="20dp"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -276,8 +286,7 @@
                             android:id="@+id/platos_carta"
                             android:textAlignment="center"
                             android:layout_marginTop="20dp"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                 </TableLayout>
                 <TableLayout android:id="@+id/texto_menu" android:visibility="gone">
@@ -289,20 +298,18 @@
                             android:textStyle="bold"
                             android:textSize="20dp"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/titulo_primeros_platos"
-                            android:text="Primeros Platos"
+                            android:text="@string/primeros_platos"
                             android:textStyle="bold"
                             android:textAlignment="center"
                             android:layout_marginTop="20dp"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -310,20 +317,18 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/primeros_platos"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/titulo_segundos_platos"
-                            android:text="Segundos Platos"
+                            android:text="@string/segundos_platos"
                             android:textStyle="bold"
                             android:textAlignment="center"
                             android:layout_weight="3"
-                            android:layout_marginTop="20dp"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_marginTop="20dp"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -331,20 +336,18 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/segundos_platos"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/titulo_postres"
-                            android:text="Postres"
+                            android:text="@string/postres"
                             android:layout_marginTop="20dp"
                             android:textStyle="bold"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -352,20 +355,18 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/postres"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/titulo_extras"
-                            android:text="Extras"
+                            android:text="@string/extras"
                             android:layout_marginTop="20dp"
                             android:textStyle="bold"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -373,8 +374,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/extras"
                             android:textAlignment="center"
-                            android:layout_weight="3"
-                            android:layout_centerHorizontal="true"/>
+                            android:layout_weight="3"/>
                     </TableRow>
                 </TableLayout>
             </TableLayout>
@@ -408,7 +408,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
                 android:focusable="false"
-                android:hint="Fecha"
+                android:hint="@string/fecha"
                 android:textSize="16dp"
                 android:background="@drawable/edittext_border"
                 android:inputType="date"
@@ -420,7 +420,7 @@
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:hint="Nº Personas"
+                android:hint="@string/n_personas"
                 android:textSize="16dp"
                 android:background="@drawable/edittext_border"
                 android:inputType="number"
@@ -432,7 +432,7 @@
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:hint="Presupuesto"
+                android:hint="@string/presupuesto"
                 android:textSize="16dp"
                 android:background="@drawable/edittext_border"
                 android:inputType="numberDecimal"
@@ -444,7 +444,7 @@
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:hint="Comentarios"
+                android:hint="@string/comentarios"
                 android:textSize="16dp"
                 android:inputType="text"
                 android:gravity="top"
@@ -465,7 +465,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/solicitar_solicitud"
-                android:text="Comentarios"
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
                 android:textSize="22dp"
@@ -474,7 +473,7 @@
                 android:id="@+id/titulo_comentarios"
                 android:textStyle="bold"/>
             <TableLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stretchColumns="*"
                 android:layout_marginTop="20dp"

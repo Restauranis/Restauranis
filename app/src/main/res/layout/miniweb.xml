@@ -1,93 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:id="@+id/miniweb"
-    tools:context="com.restauranis.restauranis.Miniweb"
-    tools:ignore="MergeRootFrame">
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:fitsSystemWindows="true"
-        android:background="@color/blanco"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
-            <ImageView
-                android:id="@+id/background_miniweb"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
-                android:layout_marginBottom="25dp"
-                />
-            <TableLayout
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:stretchColumns="*"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/botones_superiores"
-                android:layout_marginTop="200dp"
-                android:layout_gravity="center_horizontal">
-                <TableRow>
-                    <TextView
-                        android:layout_width="25dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/background_nota_miniweb"
-                        android:id="@+id/valoracion"
-                        android:textSize="20dp"
-                        android:textAlignment="center"
-                        android:gravity="center"
-                        android:textColor="@color/blanco"/>
-                    <ImageView
-                        android:layout_width="150dp"
-                        android:layout_height="45dp"
-                        android:src="@drawable/llamar_miniweb"
-                        android:layout_gravity="top"
-                        android:id="@+id/llamar_miniweb"
-                        android:layout_marginLeft="20dp"
-                        android:layout_centerHorizontal="true"
-                        />
-                    <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:src="@drawable/compartir_miniweb"
-                        android:layout_gravity="center|top"
-                        android:id="@+id/compartir_miniweb"
-                        android:layout_marginLeft="8dp"
-                        android:layout_centerHorizontal="true"/>
-                </TableRow>
-            </TableLayout>
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/miniweb_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/miniweb_details"
+    tools:openDrawer="start"
+    android:background="@color/groc">
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:fitsSystemWindows="true"
+        android:id="@+id/miniweb"
+        tools:context="com.restauranis.restauranis.Miniweb"
+        tools:ignore="MergeRootFrame">
 
-    </android.support.v4.widget.NestedScrollView>
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:fitsSystemWindows="true"
+            android:background="@color/blanco"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-</android.support.design.widget.CoordinatorLayout>
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:toolbarId="@+id/toolbar">
+                <ImageView
+                    android:id="@+id/background_miniweb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="parallax"
+                    android:layout_marginBottom="25dp"
+                    android:contentDescription="@string/foto_1"
+                    />
+                <TableLayout
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/botones_superiores"
+                    android:layout_marginTop="200dp"
+                    android:layout_gravity="center_horizontal">
+                    <TableRow>
+                        <TextView
+                            android:layout_width="25dp"
+                            android:layout_height="42dp"
+                            android:background="@drawable/background_nota_miniweb"
+                            android:id="@+id/valoracion"
+                            android:textSize="20dp"
+                            android:textAlignment="center"
+                            android:gravity="center"
+                            android:textColor="@color/blanco"/>
+                        <ImageView
+                            android:layout_width="150dp"
+                            android:layout_height="45dp"
+                            android:src="@drawable/llamar_miniweb"
+                            android:layout_gravity="top"
+                            android:id="@+id/llamar_miniweb"
+                            android:contentDescription="@string/boton_llamar"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="20dp"
+                            />
+                        <ImageView
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:src="@drawable/compartir_miniweb"
+                            android:layout_gravity="center|top"
+                            android:contentDescription="@string/icono_compartir"
+                            android:id="@+id/compartir_miniweb"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"/>
+                    </TableRow>
+                </TableLayout>
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/miniweb_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/miniweb_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/blanco"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.design.widget.CoordinatorLayout>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer"
+        app:itemIconTint="@color/groc"/>
+</android.support.v4.widget.DrawerLayout>

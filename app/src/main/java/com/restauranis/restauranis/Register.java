@@ -53,10 +53,6 @@ public class Register extends AppCompatActivity {
     String fira_sans = "font/fira_sans_regular.ttf";
     String url = "https://www.restauranis.com/consultas-register-app.php";
 
-    LocationManager locationManager;
-    double longitudeGPS, latitudeGPS;
-    private String localidadGPS;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,7 +158,7 @@ public class Register extends AppCompatActivity {
                                 e1.printStackTrace();
                             }
                         }
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Register.this, android.R.layout.simple_dropdown_item_1line, localidades);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(Register.this, android.R.layout.simple_dropdown_item_1line, localidades);
                         localidad_register.setAdapter(adapter);
                     }
                 },
@@ -181,16 +177,7 @@ public class Register extends AppCompatActivity {
         localidad_register = (AutoCompleteTextView) findViewById(R.id.localidad);
 
         localidad_register.setTypeface(TF);
-        /*localidad_register.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_SHORT).show();
-                    checkLocation();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
+
         localidad_register.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
@@ -204,37 +191,6 @@ public class Register extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
     }
-
-    /*private boolean checkLocation() {
-        if (!isLocationEnabled())
-            showAlert();
-        return isLocationEnabled();
-    }*/
-
-    private void showAlert() {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Location")
-                .setMessage("Su ubicación esta desactivada.\npor favor active su ubicación " +
-                        "usa esta app")
-                .setPositiveButton("Configuración de ubicación", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    }
-                });
-        dialog.show();
-    }
-
-    /*private boolean isLocationEnabled() {
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }*/
 
     private void login() {
 
@@ -270,7 +226,7 @@ public class Register extends AppCompatActivity {
                 }
             }) {
                 protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> map = new HashMap<String, String>();
+                    Map<String, String> map = new HashMap<>();
                     map.put("consulta", "1");
                     map.put("email", email);
                     map.put("password", password);
@@ -332,7 +288,7 @@ public class Register extends AppCompatActivity {
                 }
             }) {
                 protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> map = new HashMap<String, String>();
+                    Map<String, String> map = new HashMap<>();
                     map.put("consulta", "2");
                     map.put("email", email);
                     map.put("nombre", nombre);
@@ -379,7 +335,7 @@ public class Register extends AppCompatActivity {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("consulta", "3");
                 map.put("email", email_forgot.getText().toString());
 

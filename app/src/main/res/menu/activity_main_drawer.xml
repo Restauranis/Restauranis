@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
-            android:title="Home"/>
+            android:title="@string/home_menu"/>
         <item
             android:id="@+id/nav_cercanos"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Cercanos" />
-        <item
-            android:id="@+id/nav_cocina"
-            android:icon="@drawable/ic_cocina"
-            android:title="Cocina" />
+            android:icon="@drawable/ic_cercanos"
+            android:title="@string/cercanos_menu" />
         <item
             android:id="@+id/nav_recomendados"
             android:icon="@drawable/ic_most_valued"
-            android:title="Most Valued" />
+            android:title="@string/mejores_valorados_home" />
+        <item
+            android:id="@+id/nav_precio"
+            android:icon="@drawable/ic_precio"
+            android:title="@string/precio_home" />
         <item
             android:id="@+id/nav_nuevos"
             android:icon="@drawable/ic_ajustes2"
-            android:title="Nuevos" />
+            android:title="@string/nuevos_home" />
         <item
             android:id="@+id/nav_premium"
             android:icon="@drawable/ic_premium"
-            android:title="Premium" />
+            android:title="@string/premium_home" />
+        <item
+            android:id="@+id/nav_cocina"
+            android:icon="@drawable/ic_cocina"
+            android:title="@string/cocina_home" />
     </group>
 
 </menu>

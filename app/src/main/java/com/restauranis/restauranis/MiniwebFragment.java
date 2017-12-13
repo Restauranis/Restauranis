@@ -89,7 +89,6 @@ public class MiniwebFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //requestQueue = Volley.newRequestQueue(this);
         id_restaurante = getArguments().getInt("idrestaurante");
         final Activity activity = this.getActivity();
         final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -441,7 +440,7 @@ public class MiniwebFragment extends Fragment {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("consulta", "1");
                 map.put("idrestaurante", String.valueOf(id_restaurante));
                 return map;
@@ -476,7 +475,7 @@ public class MiniwebFragment extends Fragment {
         }
         }) {
         protected Map<String, String> getParams() throws AuthFailureError {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             map.put("consulta", "2");
             map.put("idrestaurante", String.valueOf(id_restaurante));
             return map;
@@ -504,7 +503,7 @@ public class MiniwebFragment extends Fragment {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("consulta", "4");
                 map.put("idrestaurante", String.valueOf(id_restaurante));
                 map.put("cliente", nombre_usuario);
@@ -562,7 +561,7 @@ public class MiniwebFragment extends Fragment {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("consulta", "3");
                 map.put("idrestaurante", String.valueOf(id_restaurante));
                 map.put("menu", String.valueOf(menu));
@@ -611,11 +610,15 @@ public class MiniwebFragment extends Fragment {
                                 String servicio = obj.getString("servicio");
                                 String precio = obj.getString("precio");
 
+                                if(texto.equals("")){
+                                    texto = "\nEste usuario no ha realizado ningún comentario";
+                                }
                                 /* Find Tablelayout defined in main.xml */
                                 TableLayout tl = (TableLayout) getActivity().findViewById(R.id.tabla_comentarios);
                                 /* Create a new row to be added. */
                                 TableRow tr = new TableRow(getContext());
-                                tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                                TableRow.LayoutParams param = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+                                tr.setLayoutParams(param);
                                 /* Create a Button to be the row-content. */
                                 TextView a = new TextView(getContext());
                                 a.setText(nombre+"\n"+fecha);
@@ -633,17 +636,16 @@ public class MiniwebFragment extends Fragment {
                                 b.setTextSize(10);
                                 ss1.setSpan(new RelativeSizeSpan(1.4f), 50,valoracion.length(), 0); // set size
                                 b.setText(ss1);
-                                TableRow.LayoutParams params2 = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+                                TableRow.LayoutParams params2 = new TableRow.LayoutParams(625, TableRow.LayoutParams.WRAP_CONTENT);
                                 params2.setMargins(0,-50,0,0);
                                 b.setLayoutParams(params2);
-                                b.setPadding(10,0,10,10);
+                                b.setPadding(10,0,0,10);
 
                                 /* Add Button to row. */
                                 tr.addView(a);
                                 tr.addView(b);
                                 /* Add row to TableLayout. */
-                                //tr.setBackgroundResource(R.drawable.sf_gradient_03);
-                                tl.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                                tl.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                             }
 
                         }catch (JSONException e) {
@@ -660,7 +662,7 @@ public class MiniwebFragment extends Fragment {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("consulta", "5");
                 map.put("idrestaurante", String.valueOf(id_restaurante));
                 return map;
@@ -673,8 +675,7 @@ public class MiniwebFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_miniweb, container, false);
-        return rootView;
+        return inflater.inflate(R.layout.fragment_miniweb, container, false);
     }
 
     private String nombreUrl(String nombre){
