@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_restaurant"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:layout_alignParentLeft="true"/>
+    <TextView
+        android:id="@+id/text1"
+        style="?android:attr/dropDownItemStyle"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="30dp"
+        android:paddingStart="30dp"
+        android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:ellipsize="marquee" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/gris_flojo" />
+</RelativeLayout>

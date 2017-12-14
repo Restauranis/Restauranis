@@ -9,14 +9,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -52,7 +55,7 @@ public class BuscadorFragment extends Fragment {
     public List<Restaurant> restaurantes = new ArrayList<>();
     private RecyclerView recyclerView;
     RequestQueue requestQueue, requestQueue2;
-    private String localidad, nombre_restaurante, cocina, urlImagen, precio, valoracion, resultado, nombre_resultado;
+    private String localidad, nombre_restaurante, cocina, urlImagen, precio, valoracion, resultado, nombre_resultado, buscador;
     private int id_restaurante, id_resultado;
     private String url = "https://www.restauranis.com/consultas-app.php";
     private ProgressBar itemProgressBar;
@@ -75,6 +78,10 @@ public class BuscadorFragment extends Fragment {
         tipo = getArguments().getString("tipo");
         cocina_predeterminada = getArguments().getString("predeterminada");
         idCocina = getArguments().getString("idCocina");
+        buscador = getArguments().getString("buscador");
+        final Activity activity = this.getActivity();
+        final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+        appBarLayout.setTitle("HOLAAA");
     }
 
     @Override
@@ -101,21 +108,37 @@ public class BuscadorFragment extends Fragment {
             resultados.setText("Restaurantes por Precio");
         } else if(tipo.equals("cocina")){
             resultados.setText("Tipos de cocina más buscados");
-            loadCocinas();
             loadCocinasPredeterminadas();
             recyclerView.setVisibility(View.GONE);
             cocinas.setVisibility(View.VISIBLE);
         }else if(tipo.equals("predeterminada")) {
             resultados.setText("Restaurantes con cocina "+cocina_predeterminada);
             loadRestaurantesCocina();
+        }else if(tipo.equals("buscador")) {
+            resultados.setText("Resultados para '"+buscador+"'");
+            loadResultados(buscador);
         }else{
             resultados.setText("Restaurantes " + tipo);
         }
         if(!tipo.equals("cocina")){
-            loadAutocompletar();
             loadRestaurantes();
         }
 
+        loadAutocompletar();
+        restaurantes_buscador.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    loadResultados(restaurantes_buscador.getText().toString());
+                    Intent intent = new Intent(getContext(), Buscador.class);
+                    intent.putExtra("tipo", "buscador");
+                    intent.putExtra("buscador", restaurantes_buscador.getText().toString());
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        });
         itemProgressBar = (ProgressBar) rootView.findViewById(R.id.item_progress_bar);
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -203,56 +226,6 @@ public class BuscadorFragment extends Fragment {
                 map.put("tipo",tipo);
                 map.put("limit", String.valueOf(limit));
                 map.put("localidad",localidad);
-                return map;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    public void loadCocinas(){
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("AAAA","response 8 "+response);
-                try{
-                    JSONArray j= new JSONArray(response);
-
-                    String[] results = new String[j.length()];
-                    for (int i = 0; i < j.length(); i++) {
-                        try {
-                            JSONObject obj = j.getJSONObject(i);
-                            resultado = obj.getString("resultado");
-                            nombre_resultado = obj.getString("nombre");
-                            id_resultado = obj.getInt("id");
-                            results[i]=nombre_resultado;
-
-                            restaurantes_buscador.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                                    //... your stuff
-                                }
-                            });
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, results);
-                    restaurantes_buscador.setAdapter(adapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("consulta", "8");
-                map.put("buscando", "cocina");
                 return map;
             }
         };
@@ -400,7 +373,6 @@ public class BuscadorFragment extends Fragment {
     }
 
     private void loadRestaurantesCocina() {
-        Log.d("AAAA","entra");
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -462,10 +434,18 @@ public class BuscadorFragment extends Fragment {
                         try {
                             JSONObject obj = j.getJSONObject(i);
                             resultado = obj.getString("resultado");
-                            nombre_resultado = obj.getString("nombre");
-                            id_resultado = obj.getInt("id");
-                            results[i]=nombre_resultado;
-
+                            if(resultado.equals("restaurante")){
+                                nombre_resultado = obj.getString("nombre");
+                                id_resultado = obj.getInt("idRestaurante");
+                                results[i]=nombre_resultado;
+                            }else if(resultado.equals("cocina")){
+                                cocina = obj.getString("cocina");
+                                id_resultado = obj.getInt("idCocina");
+                                results[i]="Cocina "+cocina;
+                            }else{
+                                localidad = obj.getString("localidad");
+                                results[i]=localidad;
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -474,17 +454,21 @@ public class BuscadorFragment extends Fragment {
                     restaurantes_buscador.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                            Log.d("AAAA", String.valueOf(position));
-                            Log.d("AAAA", String.valueOf(id));
-                            Log.d("AAAA", String.valueOf(parent));
-                            Log.d("AAAA", String.valueOf(id_resultado));
-                            Log.d("AAAA", restaurantes_buscador.getText().toString());
-                            /*Intent intent = new Intent(getContext(), Miniweb.class);
-                            intent.putExtra("idrestaurante", results[position]);
-                            startActivity(intent);*/
+                            if(restaurantes_buscador.getText().toString().contains("-")) {
+                                loadMiniweb(restaurantes_buscador.getText().toString());
+                            }else if(restaurantes_buscador.getText().toString().contains("Cocina")){
+                                loadBuscadorCocina(restaurantes_buscador.getText().toString());
+                            }else{
+                                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("Localidad", restaurantes_buscador.getText().toString());
+                                editor.apply();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     });
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, results);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.autocompletar, R.id.text1, results);
                     restaurantes_buscador.setAdapter(adapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -499,13 +483,120 @@ public class BuscadorFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "8");
-                map.put("buscando", "restaurantes");
                 return map;
             }
         };
         requestQueue.add(request);
 
 
+    }
+
+    private void loadMiniweb(String buscador) {
+
+        String[] separated = buscador.split(" - ");
+        final String nombre_separated = separated[0];
+        final String localidad_separated = separated[1];
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AAAA","response 11 "+response);
+                Intent intent = new Intent(getContext(), Miniweb.class);
+                intent.putExtra("idrestaurante", Integer.valueOf(response));
+                intent.putExtra("tipo", tipo);
+                startActivity(intent);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("consulta", "11");
+                map.put("nombre", nombre_separated);
+                map.put("localidad", localidad_separated);
+                return map;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void loadResultados(final String buscador) {
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AAAA","response 12 "+response);
+                try{
+                    JSONArray j= new JSONArray(response);
+
+                    // Parsea json
+                    for (int i = 0; i < j.length(); i++) {
+                        try {
+                            JSONObject obj = j.getJSONObject(i);
+                            id_restaurante = obj.getInt("id");
+                            nombre_restaurante = obj.getString("nombre");
+                            precio = obj.getString("precio");
+                            cocina = obj.getString("cocina");
+                            urlImagen = obj.getString("foto");
+                            valoracion = obj.getString("valoracion");
+                            Restaurant rest = new Restaurant(id_restaurante, nombre_restaurante, urlImagen, precio, cocina, valoracion);
+
+                            restaurantes.add(rest);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    recyclerView.setAdapter(new BuscadorFragment.SimpleItemRecyclerViewAdapter(restaurantes));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("consulta", "12");
+                map.put("nombre",buscador);
+                map.put("localidad",localidad);
+                return map;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void loadBuscadorCocina(final String buscador) {
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AAAA","response 13 "+response);
+                Intent intent = new Intent(getContext(), Buscador.class);
+                intent.putExtra("idCocina", response);
+                intent.putExtra("tipo", "predeterminada");
+                intent.putExtra("predeterminada", buscador);
+                startActivity(intent);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("consulta", "13");
+                map.put("cocina", buscador.substring(7));
+                return map;
+            }
+        };
+        requestQueue.add(request);
     }
 
     public class SimpleItemRecyclerViewAdapter

@@ -9,23 +9,22 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 public class Buscador extends AppCompatActivity {
 
-    private String tipo, localidad, predeterminada, idCocina;
+    private String tipo, localidad, predeterminada, idCocina, buscador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.buscador);
         Toolbar toolbar = (Toolbar) findViewById(R.id.miniweb_toolbar);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        localidad = preferences.getString("Localidad", "");
-        toolbar.setTitle("UBICACION");
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        appBarLayout.setTitle("ASFD");
-
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -36,6 +35,7 @@ public class Buscador extends AppCompatActivity {
         tipo = getIntent().getStringExtra("tipo");
         predeterminada = getIntent().getStringExtra("predeterminada");
         idCocina = getIntent().getStringExtra("idCocina");
+        buscador = getIntent().getStringExtra("buscador");
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
@@ -44,11 +44,16 @@ public class Buscador extends AppCompatActivity {
             arguments.putString("tipo", tipo);
             arguments.putString("predeterminada", predeterminada);
             arguments.putString("idCocina", idCocina);
+            arguments.putString("buscador", buscador);
             BuscadorFragment fragment = new BuscadorFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction().add(R.id.buscador_details, fragment).commit();
         }
 
+    }
+
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     @Override

@@ -20,7 +20,7 @@
             android:title="@string/precio_home" />
         <item
             android:id="@+id/nav_nuevos"
-            android:icon="@drawable/ic_ajustes2"
+            android:icon="@drawable/ic_nuevos"
             android:title="@string/nuevos_home" />
         <item
             android:id="@+id/nav_premium"

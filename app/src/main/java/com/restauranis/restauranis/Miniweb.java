@@ -1,7 +1,9 @@
 package com.restauranis.restauranis;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
@@ -15,8 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -37,7 +41,10 @@ import java.util.Map;
 public class Miniweb extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private int id_restaurante;
-    private String tipo;
+    private String tipo, nombre_usuario, valoraciones_user, email;
+    private TextView nombre_user, valoraciones;
+    RequestQueue requestQueue;
+    private String url = "https://www.restauranis.com/consultas-app.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,50 @@ public class Miniweb extends AppCompatActivity implements NavigationView.OnNavig
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        requestQueue = Volley.newRequestQueue(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        nombre_usuario =preferences.getString("Nombre", "");
+        email = preferences.getString("Email", "");
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONArray j= new JSONArray(response);
+
+                    // Parsea json
+                    for (int i = 0; i < j.length(); i++) {
+                        try {
+                            JSONObject obj = j.getJSONObject(i);
+                            valoraciones_user = obj.getString("valoraciones");
+                            valoraciones.setText(valoraciones_user);
+                            //nombre_user.setText(nombre);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("consulta", "2");
+                map.put("email",email);
+                return map;
+            }
+        };
+        requestQueue.add(request);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -62,6 +113,12 @@ public class Miniweb extends AppCompatActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerLayout = navigationView.getHeaderView(0);
+        nombre_user = (TextView) headerLayout.findViewById(R.id.nombre_user);
+        valoraciones = (TextView) headerLayout.findViewById(R.id.textView);
+        nombre_user.setText(nombre_usuario);
+        valoraciones.setText(valoraciones_user);
 
         id_restaurante = getIntent().getIntExtra("idrestaurante",0);
         tipo = getIntent().getStringExtra("tipo");

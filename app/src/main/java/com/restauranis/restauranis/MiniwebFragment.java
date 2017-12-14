@@ -70,29 +70,12 @@ public class MiniwebFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MiniwebFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MiniwebFragment newInstance(String param1, String param2) {
-        MiniwebFragment fragment = new MiniwebFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         id_restaurante = getArguments().getInt("idrestaurante");
         final Activity activity = this.getActivity();
         final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-        final android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) activity.findViewById(R.id.miniweb_toolbar);
 
         requestQueue = Volley.newRequestQueue(activity);
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -353,15 +336,12 @@ public class MiniwebFragment extends Fragment {
 
                             icono_comentarios.setOnClickListener(new View.OnClickListener(){
                                public void onClick(View v){
-                                   scrollView.scrollTo(0, scrollView.getBottom());
-                                   scrollView.post(new Runnable()
-                                   {
-                                       @Override
-                                       public void run()
-                                       {
-                                           scrollView.scrollTo(0, scrollView.getBottom());
-                                       }
-                                   });
+                                   Context context = v.getContext();
+                                   Intent intent = new Intent(context, Opinar.class);
+                                   intent.putExtra("idrestaurante", id_restaurante);
+                                   intent.putExtra("foto", urlImagen);
+                                   intent.putExtra("nombre", nombre_restaurante);
+                                   startActivity(intent);
                                }
                             });
 
