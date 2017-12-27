@@ -34,11 +34,38 @@
                 android:layout_below="@id/titulo_cercanos"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/subtitulo_cercanos"
+                android:id="@+id/no_gps"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="15dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:textSize="15dp"
+                    android:id="@+id/texto_no_gps"
+                    android:textAlignment="center"
+                    android:text="@string/no_gps"/>
+                <Button
+                    android:layout_width="225dp"
+                    android:layout_height="35dp"
+                    android:id="@+id/button_gps"
+                    android:layout_below="@id/texto_no_gps"
+                    android:layout_margin="15dp"
+                    android:textColor="@color/blanco"
+                    android:text="@string/activar_gps"
+                    android:background="@color/gris"
+                    android:layout_centerHorizontal="true"/>
+            </RelativeLayout>
             <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_below="@id/subtitulo_cercanos"
                 android:layout_marginTop="5dp"
+                android:id="@+id/scrollCercanos"
                 android:scrollbars="none">
                 <LinearLayout
                     android:layout_width="wrap_content"

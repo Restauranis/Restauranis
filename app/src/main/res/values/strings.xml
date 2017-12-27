@@ -76,5 +76,7 @@
     <string name="reservar">Reservar</string>
     <string name="boton_llamar">boton llamar</string>
     <string name="icono_compartir">icono compartir restaurante</string>
+    <string name="no_gps">Para ver los restaurantes cercanos es necesario conocer su ubicación actual</string>
+    <string name="activar_gps">Activar GPS</string>
 
 </resources>

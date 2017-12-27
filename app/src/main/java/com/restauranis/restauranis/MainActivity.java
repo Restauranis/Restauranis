@@ -1,21 +1,25 @@
 package com.restauranis.restauranis;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager;
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +33,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -39,19 +46,31 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private Menu menu;
     RequestQueue requestQueue;
@@ -66,6 +85,15 @@ public class MainActivity extends AppCompatActivity
     public List<Restaurant> restaurantesPremium = new ArrayList<>();
     private RecyclerView recyclerViewCercanos, recyclerViewValorados, recyclerViewPrecio, recyclerViewNuevos, recyclerViewPremium;
     private ImageView masCercanos, masValorados, masPrecio, masNuevos, masPremium;
+    private RelativeLayout no_gps;
+    private HorizontalScrollView scrollCercanos;
+    public LocationManager locationManager;
+    private Location mLastLocation;
+    boolean GpsStatus;
+    private Button button_gps;
+    private GoogleApiClient apiClient;
+    private double latitud, longitud;
+    private int ubicacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,18 +110,96 @@ public class MainActivity extends AppCompatActivity
         recyclerViewPrecio = (RecyclerView) findViewById(R.id.precio);
         recyclerViewNuevos = (RecyclerView) findViewById(R.id.nuevos);
         recyclerViewPremium = (RecyclerView) findViewById(R.id.premium);
+        no_gps = (RelativeLayout) findViewById(R.id.no_gps);
+        scrollCercanos = (HorizontalScrollView) findViewById(R.id.scrollCercanos);
+        button_gps = (Button) findViewById(R.id.button_gps);
+        latitud = getIntent().getDoubleExtra("lat", 0);
+        longitud = getIntent().getDoubleExtra("lon", 0);
 
-        if(localidad.isEmpty()){
+        apiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
+
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (latitud != 0 && longitud != 0) {
+            no_gps.setVisibility(View.GONE);
+            Log.d("AAAA","lat1:"+latitud);
+            Log.d("AAAA","lon1:"+longitud);
+            loadCercanos();
+        } else {
+            if(GpsStatus==true){
+                Log.d("AAAA","ubi:"+ubicacion);
+                ubicacion = ubicacion+1;
+            }
+            scrollCercanos.setVisibility(View.GONE);
+            button_gps.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    final LocationRequest locationRequest = LocationRequest.create();
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    locationRequest.setInterval(30 * 1000);
+                    locationRequest.setFastestInterval(5 * 1000);
+
+                    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                            .addLocationRequest(locationRequest);
+
+                    builder.setAlwaysShow(true);
+                    PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(apiClient, builder.build());
+
+                    if (result != null) {
+                        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                            @Override
+                            public void onResult(LocationSettingsResult locationSettingsResult) {
+                                final Status status = locationSettingsResult.getStatus();
+
+                                switch (status.getStatusCode()) {
+                                    case LocationSettingsStatusCodes.SUCCESS:
+                                        // All location settings are satisfied. The client can initialize location
+                                        // requests here.
+
+                                        break;
+                                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                        // Location settings are not satisfied. But could be fixed by showing the user
+                                        // a optionsDialog.
+                                        try {
+                                            // Show the optionsDialog by calling startResolutionForResult(),
+                                            // and check the result in onActivityResult().
+                                            if (status.hasResolution()) {
+                                                status.startResolutionForResult(MainActivity.this, 1000);
+                                            }
+                                        } catch (IntentSender.SendIntentException e) {
+                                            // Ignore the error.
+                                        }
+                                        break;
+                                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                        // Location settings are not satisfied. However, we have no way to fix the
+                                        // settings so we won't show the optionsDialog.
+                                        break;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+        }
+
+        if (localidad.isEmpty()) {
             loadPersonalInfo();
-        }else{
+        } else {
             localidad = preferences.getString("Localidad", "");
-            nombre_usuario =preferences.getString("Nombre", "");
-            telefono_usuario =preferences.getString("Telefono", "");
+            nombre_usuario = preferences.getString("Nombre", "");
+            telefono_usuario = preferences.getString("Telefono", "");
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    try{
-                        JSONArray j= new JSONArray(response);
+                    try {
+                        JSONArray j = new JSONArray(response);
 
                         // Parsea json
                         for (int i = 0; i < j.length(); i++) {
@@ -122,13 +228,13 @@ public class MainActivity extends AppCompatActivity
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> map = new HashMap<>();
                     map.put("consulta", "2");
-                    map.put("email",email);
+                    map.put("email", email);
                     return map;
                 }
             };
             requestQueue.add(request);
         }
-        loadCercanos();
+
         loadValorados();
         loadPrecio();
         loadNuevos();
@@ -176,6 +282,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Buscador.class);
                 intent.putExtra("tipo", "cercanos");
+                intent.putExtra("lat", latitud);
+                intent.putExtra("lon", longitud);
                 startActivity(intent);
             }
         });
@@ -210,6 +318,75 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (apiClient != null) {
+            apiClient.connect();
+        }
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("AAAA", "Error grave al conectar con Google Play Services");
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d("AAAA","ubi2:"+ubicacion);
+        if(ubicacion==1) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+
+                latitud = lastLocation.getLatitude();
+                longitud = lastLocation.getLongitude();
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.putExtra("lat", latitud);
+                intent.putExtra("lon", longitud);
+                //intent.putExtra("Localidad",addresses.get(0).getLocality());
+                finish();
+                startActivity(intent);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((resultCode == Activity.RESULT_OK) && (requestCode == 1000)) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = gcd.getFromLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 1);
+                Log.d("AAAA",addresses.get(0).getLocality());
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.putExtra("lat",mLastLocation.getLatitude());
+                intent.putExtra("lon",mLastLocation.getLongitude());
+                //intent.putExtra("Localidad",addresses.get(0).getLocality());
+                finish();
+                startActivity(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("AAAA", "Se ha interrumpido la conexión con Google Play Services");
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -236,6 +413,7 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -262,10 +440,13 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            finish();
             startActivity(intent);
         } else if (id == R.id.nav_cercanos) {
             Intent intent = new Intent(MainActivity.this, Buscador.class);
             intent.putExtra("tipo", "cercanos");
+            intent.putExtra("lat", latitud);
+            intent.putExtra("lon", longitud);
             startActivity(intent);
         } else if (id == R.id.nav_cocina) {
             Intent intent = new Intent(MainActivity.this, Buscador.class);
@@ -283,7 +464,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, Buscador.class);
             intent.putExtra("tipo", "premium");
             startActivity(intent);
-        }else if(id == R.id.nav_precio) {
+        } else if (id == R.id.nav_precio) {
             Intent intent = new Intent(MainActivity.this, Buscador.class);
             intent.putExtra("tipo", "precio");
             startActivity(intent);
@@ -294,12 +475,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void loadPersonalInfo(){
+    private void loadPersonalInfo() {
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -336,7 +517,7 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "2");
-                map.put("email",email);
+                map.put("email", email);
                 return map;
             }
         };
@@ -347,8 +528,8 @@ public class MainActivity extends AppCompatActivity
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -383,7 +564,9 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "1");
-                map.put("localidad",localidad);
+                map.put("localidad", localidad);
+                map.put("lat", String.valueOf(latitud));
+                map.put("lon", String.valueOf(longitud));
                 return map;
             }
         };
@@ -394,8 +577,8 @@ public class MainActivity extends AppCompatActivity
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -430,7 +613,7 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "3");
-                map.put("localidad",localidad);
+                map.put("localidad", localidad);
                 return map;
             }
         };
@@ -441,8 +624,8 @@ public class MainActivity extends AppCompatActivity
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -477,7 +660,7 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "4");
-                map.put("localidad",localidad);
+                map.put("localidad", localidad);
                 return map;
             }
         };
@@ -488,8 +671,8 @@ public class MainActivity extends AppCompatActivity
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -524,7 +707,7 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "5");
-                map.put("localidad",localidad);
+                map.put("localidad", localidad);
                 return map;
             }
         };
@@ -535,8 +718,8 @@ public class MainActivity extends AppCompatActivity
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray j= new JSONArray(response);
+                try {
+                    JSONArray j = new JSONArray(response);
 
                     // Parsea json
                     for (int i = 0; i < j.length(); i++) {
@@ -571,7 +754,7 @@ public class MainActivity extends AppCompatActivity
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("consulta", "6");
-                map.put("localidad",localidad);
+                map.put("localidad", localidad);
                 return map;
             }
         };

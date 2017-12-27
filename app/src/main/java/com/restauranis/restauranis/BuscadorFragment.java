@@ -64,6 +64,7 @@ public class BuscadorFragment extends Fragment {
     private int pastVisibleItems, visibleItemCount, totalItemCount;
     private AutoCompleteTextView restaurantes_buscador;
     private TableLayout cocinas;
+    private double latitud, longitud;
 
     public BuscadorFragment() {
         // Required empty public constructor
@@ -79,9 +80,10 @@ public class BuscadorFragment extends Fragment {
         cocina_predeterminada = getArguments().getString("predeterminada");
         idCocina = getArguments().getString("idCocina");
         buscador = getArguments().getString("buscador");
+        latitud = getArguments().getDouble("lat");
+        longitud = getArguments().getDouble("lon");
         final Activity activity = this.getActivity();
         final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-        appBarLayout.setTitle("HOLAAA");
     }
 
     @Override
@@ -119,8 +121,11 @@ public class BuscadorFragment extends Fragment {
             loadResultados(buscador);
         }else{
             resultados.setText("Restaurantes " + tipo);
+            if(tipo.equals("cercanos")){
+                loadCercanos();
+            }
         }
-        if(!tipo.equals("cocina")){
+        if(!tipo.equals("cocina") && !tipo.equals("cercanos")){
             loadRestaurantes();
         }
 
@@ -226,6 +231,58 @@ public class BuscadorFragment extends Fragment {
                 map.put("tipo",tipo);
                 map.put("limit", String.valueOf(limit));
                 map.put("localidad",localidad);
+                return map;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void loadCercanos() {
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AAAA","response 1 "+response);
+                try{
+                    JSONArray j= new JSONArray(response);
+
+                    // Parsea json
+                    for (int i = 0; i < j.length(); i++) {
+                        try {
+                            JSONObject obj = j.getJSONObject(i);
+                            id_restaurante = obj.getInt("id");
+                            nombre_restaurante = obj.getString("nombre");
+                            precio = obj.getString("precio");
+                            cocina = obj.getString("cocina");
+                            urlImagen = obj.getString("foto");
+                            valoracion = obj.getString("valoracion");
+                            Restaurant rest = new Restaurant(id_restaurante, nombre_restaurante, urlImagen, precio, cocina, valoracion);
+
+                            restaurantes.add(rest);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    recyclerView.setAdapter(new BuscadorFragment.SimpleItemRecyclerViewAdapter(restaurantes));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("consulta", "1");
+                map.put("tipo",tipo);
+                map.put("limit", String.valueOf(limit));
+                map.put("localidad",localidad);
+                map.put("lat", String.valueOf(latitud));
+                map.put("lon", String.valueOf(longitud));
                 return map;
             }
         };

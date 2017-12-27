@@ -1,6 +1,8 @@
 package com.restauranis.restauranis;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,6 +11,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
@@ -50,11 +53,27 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 mProgress.setProgress(DURACION_SPLASH);
-                if(data!=null) {
+                if(!isOnlineNet()){
+                    AlertDialog alertDialog = new AlertDialog.Builder(SplashScreen.this).create();
+
+                    alertDialog.setTitle("Error de Conexión");
+
+                    alertDialog.setMessage("Parece que su dispositivo no tiene conexión a Internet. Por favor intenta acceder en un rato. \n\nMuchas gracias y disculpe las molestias");
+
+                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+
+                    alertDialog.show();
+                }
+                else if(data!=null) {
                     String url = data.toString();
                     Intent intent = new Intent(SplashScreen.this, NewPassword.class);
                     intent.putExtra("email",url);
                     startActivity(intent);
+                    finish();
 
                 }else if(!email.equalsIgnoreCase(""))
                 {
@@ -66,9 +85,24 @@ public class SplashScreen extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }
-                finish();
             }
         },DURACION_SPLASH);
+    }
+
+    public Boolean isOnlineNet() {
+
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+
+            int val           = p.waitFor();
+            boolean reachable = (val == 0);
+            return reachable;
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void mostrarProgress(){
